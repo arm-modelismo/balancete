@@ -1,52 +1,58 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Balancete ARM - Google Cloud</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balancete ARM - Gestão Cloud</title>
 
-<style>
-*{box-sizing:border-box;}
-:root{
-    --bg:#0b1f3a;
-    --card:#122b52;
-    --text:#ffffff;
-    --accent:#facc15;
-    --result:#1e3a8a;
-    --input-bg:#0b1f3a;
-}
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b1f3a">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135706.png">
 
-/* ESTILO TELA */
-body{ font-family:Arial,sans-serif; background:var(--bg); color:var(--text); margin:0; padding:20px; }
-.container{ max-width:650px; margin:auto; }
-h1{text-align:center; font-size:20px; margin-bottom:5px;}
-h2{text-align:center; font-size:14px; opacity:0.8; margin-top:0; margin-bottom:15px;}
-.card{background:var(--card); padding:12px; border-radius:12px; margin-bottom:10px; position: relative;}
-input,select{ width:100%; padding:8px; margin:4px 0; border-radius:6px; border:none; background:var(--input-bg); color:var(--text); font-size:14px;}
-button{ border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
-.btn-main{ width:100%; padding:12px; margin-top:8px; background:var(--accent); color:black; font-size:15px;}
-.btn-save{ width:100%; padding:12px; margin-top:5px; background:#4ade80; color:black; font-size:15px;}
-.btn-add{ background:#3b82f6; color:white; padding:5px 12px; font-size:11px; float:right; margin-bottom:5px;}
-.btn-del{ background:#ef4444; color:white; padding:2px 8px; border-radius:4px; font-size:10px; margin-left:5px;}
+    <style>
+        *{box-sizing:border-box;}
+        :root{
+            --bg:#0b1f3a;
+            --card:#122b52;
+            --text:#ffffff;
+            --accent:#facc15;
+            --result:#1e3a8a;
+            --input-bg:#0b1f3a;
+        }
 
-.tabela{width:100%; border-collapse:collapse; clear:both;}
-.tabela td, .tabela th{padding:5px; border-bottom:1px solid #ffffff22; text-align:left; font-size:13px;}
-.resultado{background:var(--result); padding:10px; border-radius:8px; margin-top:8px; font-size:14px;}
-.clearfix::after { content: ""; clear: both; display: table; }
+        /* ESTILO TELA */
+        body{ font-family:Arial,sans-serif; background:var(--bg); color:var(--text); margin:0; padding:20px; }
+        .container{ max-width:650px; margin:auto; }
+        h1{text-align:center; font-size:20px; margin-bottom:5px;}
+        h2{text-align:center; font-size:14px; opacity:0.8; margin-top:0; margin-bottom:15px;}
+        .card{background:var(--card); padding:12px; border-radius:12px; margin-bottom:10px; position: relative;}
+        input,select{ width:100%; padding:8px; margin:4px 0; border-radius:6px; border:none; background:var(--input-bg); color:var(--text); font-size:14px;}
+        button{ border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
+        
+        .btn-main{ width:100%; padding:12px; margin-top:8px; background:var(--accent); color:black; font-size:15px;}
+        .btn-save{ width:100%; padding:12px; margin-top:5px; background:#4ade80; color:black; font-size:15px;}
+        .btn-add{ background:#3b82f6; color:white; padding:5px 12px; font-size:11px; float:right; margin-bottom:5px;}
+        .btn-del{ background:#ef4444; color:white; padding:2px 8px; border-radius:4px; font-size:10px; margin-left:5px;}
 
-/* ESTILO IMPRESSÃO */
-@media print {
-    @page { size: A4; margin: 10mm; }
-    body { background: white !important; color: black !important; padding: 0; }
-    .container { max-width: 100%; height: 270mm; padding: 5mm; overflow: hidden; }
-    .card { background: white !important; padding: 0; margin-bottom: 15px; color: black !important; }
-    .btn-add, .btn-main, .btn-del, .btn-save { display: none !important; }
-    input, select { border: none !important; background: transparent !important; color: black !important; padding: 0 !important; font-weight: bold; appearance: none; }
-    .tabela { border: 1px solid black !important; }
-    .tabela td, .tabela th { border: 1px solid black !important; color: black !important; padding: 4px; }
-    .resultado { color: black !important; background: #f0f0f0 !important; border: 1px solid #000; margin-top: 4px; }
-    h1, h2, h3 { color: black !important; margin: 5px 0; }
-}
-</style>
+        .tabela{width:100%; border-collapse:collapse; clear:both;}
+        .tabela td, .tabela th{padding:5px; border-bottom:1px solid #ffffff22; text-align:left; font-size:13px;}
+        .resultado{background:var(--result); padding:10px; border-radius:8px; margin-top:8px; font-size:14px;}
+        .clearfix::after { content: ""; clear: both; display: table; }
+
+        /* ESTILO IMPRESSÃO (A4 270mm) */
+        @media print {
+            @page { size: A4; margin: 10mm; }
+            body { background: white !important; color: black !important; padding: 0; }
+            .container { max-width: 100%; height: 270mm; padding: 5mm; overflow: hidden; }
+            .card { background: white !important; padding: 0; margin-bottom: 15px; color: black !important; }
+            .btn-add, .btn-main, .btn-del, .btn-save { display: none !important; }
+            input, select { border: none !important; background: transparent !important; color: black !important; padding: 0 !important; font-weight: bold; appearance: none; }
+            .tabela { border: 1px solid black !important; }
+            .tabela td, .tabela th { border: 1px solid black !important; color: black !important; padding: 4px; }
+            .resultado { color: black !important; background: #f0f0f0 !important; border: 1px solid #000; margin-top: 4px; }
+            h1, h2, h3 { color: black !important; margin: 5px 0; }
+        }
+    </style>
 </head>
 
 <body>
@@ -128,6 +134,13 @@ button{ border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
 </div>
 
 <script>
+// --- REGISTRO DO SERVICE WORKER (PWA) ---
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Service Worker Registrado"))
+    .catch(err => console.log("Erro Service Worker", err));
+}
+
 // --- CONFIGURAÇÃO ---
 const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbzxcjx75a483H_9takaNxVVw0f4MTCF8DJMQGFuI0r2YD-s--h3hPkQ7JI8zNFpTqBS/exec";
 
@@ -177,7 +190,6 @@ function removerLinha(botao) {
 }
 
 // --- INTEGRAÇÃO GOOGLE SHEETS ---
-
 async function salvarParaPlanilha() {
     const btn = document.getElementById("btnSalvar");
     const mes = document.getElementById("mes").value;
@@ -205,9 +217,9 @@ async function salvarParaPlanilha() {
             method: "POST",
             body: JSON.stringify(dados)
         });
-        alert("Dados salvos com sucesso na planilha!");
+        alert("Dados salvos com sucesso!");
     } catch (e) {
-        alert("Erro ao conectar com o Google Sheets.");
+        alert("Erro ao salvar. Verifique a conexão.");
     } finally {
         btn.innerText = "Guardar no Google Sheets";
         btn.disabled = false;
@@ -227,7 +239,7 @@ async function buscarSaldoAnterior() {
     try {
         const res = await fetch(`${URL_GOOGLE}?chave=${chaveAnterior}`);
         const data = await res.json();
-        if (data.saldo) {
+        if (data && data.saldo) {
             document.getElementById("caixaAnterior").value = formatarReal(data.saldo);
             calcular();
         }
