@@ -1,0 +1,16 @@
+{
+  "name": "Balancete ARM",
+  "short_name": "ARM",
+  "description": "Sistema de Balancete Financeiro - Associação Regional de Modelismo",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b1f3a",
+  "theme_color": "#0b1f3a",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
