@@ -137,12 +137,12 @@
 // --- REGISTRO DO SERVICE WORKER (PWA) ---
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
-    .then(() => console.log("Service Worker Registrado"))
-    .catch(err => console.log("Erro Service Worker", err));
+    .then(() => console.log("PWA Ativo"))
+    .catch(err => console.log("Erro PWA", err));
 }
 
 // --- CONFIGURAÇÃO ---
-const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbzxcjx75a483H_9takaNxVVw0f4MTCF8DJMQGFuI0r2YD-s--h3hPkQ7JI8zNFpTqBS/exec";
+const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbzpAcX4dApu3iK3DG3uLuPAz61NMTzzkWRQ-mHhwqWby_rUECu7bp0DO9VvHSFqUk-z/exec";
 
 function mascaraMoeda(campo) {
     let valor = campo.value.replace(/\D/g, "");
@@ -209,17 +209,20 @@ async function salvarParaPlanilha() {
         }))
     };
 
-    btn.innerText = "A guardar...";
+    btn.innerText = "A enviar...";
     btn.disabled = true;
 
     try {
         await fetch(URL_GOOGLE, {
             method: "POST",
+            mode: "no-cors", 
+            cache: "no-cache",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
         });
-        alert("Dados salvos com sucesso!");
+        alert("Comando enviado! Os dados aparecerão na folha de cálculo em instantes.");
     } catch (e) {
-        alert("Erro ao salvar. Verifique a conexão.");
+        alert("Erro técnico ao enviar. Verifique a sua ligação.");
     } finally {
         btn.innerText = "Guardar no Google Sheets";
         btn.disabled = false;
@@ -244,7 +247,7 @@ async function buscarSaldoAnterior() {
             calcular();
         }
     } catch (e) {
-        console.log("Saldo anterior não encontrado.");
+        console.log("Saldo anterior ainda não existe na nuvem.");
     }
 }
 
