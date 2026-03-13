@@ -24,7 +24,6 @@
         body{ font-family:Arial,sans-serif; background:var(--bg); color:var(--text); margin:0; padding:20px; }
         .container{ max-width:650px; margin:auto; }
         
-        /* Espaço para o ícone no topo */
         .header-logo {
             display: block;
             margin: 0 auto 10px auto;
@@ -49,6 +48,24 @@
         .tabela{width:100%; border-collapse:collapse; clear:both;}
         .tabela td, .tabela th{padding:5px; border-bottom:1px solid #ffffff22; text-align:left; font-size:13px;}
         .resultado{background:var(--result); padding:10px; border-radius:8px; margin-top:8px; font-size:14px;}
+        
+        /* Campo Observações */
+        .obs-container { margin-top: 15px; }
+        .obs-container h3 { font-size: 14px; margin-bottom: 5px; color: var(--accent); }
+        .textarea-obs { 
+            width: 100%; 
+            min-height: 80px; 
+            background: var(--input-bg); 
+            color: var(--text); 
+            border: 1px solid #ffffff22; 
+            border-radius: 8px; 
+            padding: 10px; 
+            font-family: inherit; 
+            font-size: 13px; 
+            resize: none; 
+            overflow: hidden;
+        }
+
         .clearfix::after { content: ""; clear: both; display: table; }
 
         @media print {
@@ -57,7 +74,16 @@
             .container { max-width: 100%; height: 270mm; padding: 5mm; overflow: hidden; }
             .card { background: white !important; padding: 0; margin-bottom: 15px; color: black !important; }
             .btn-add, .btn-main, .btn-del, .btn-save, .btn-refresh { display: none !important; }
-            input, select { border: none !important; background: transparent !important; color: black !important; padding: 0 !important; font-weight: bold; appearance: none; }
+            input, select, .textarea-obs { 
+                border: none !important; 
+                background: transparent !important; 
+                color: black !important; 
+                padding: 0 !important; 
+                font-weight: bold; 
+                appearance: none; 
+            }
+            .textarea-obs { font-weight: normal; margin-top: 5px; }
+            .obs-container h3 { color: black !important; border-bottom: 1px solid black; display: inline-block; width: 100%; }
             .tabela { border: 1px solid black !important; }
             .tabela td, .tabela th { border: 1px solid black !important; color: black !important; padding: 4px; }
             .resultado { color: black !important; background: #f0f0f0 !important; border: 1px solid #000; margin-top: 4px; }
@@ -146,6 +172,11 @@
         <div class="resultado" style="background:var(--accent); color:black;">
             Saldo: <b id="saldoFinal">R$ 0,00</b>
         </div>
+
+        <div class="obs-container">
+            <h3>Observações:</h3>
+            <textarea class="textarea-obs" id="obs" placeholder="Digite aqui notas ou observações importantes..." oninput="autoAjustar(this)"></textarea>
+        </div>
         
         <button class="btn-save" id="btnSalvar" onclick="salvarParaPlanilha()">Guardar no Google Sheets</button>
         <button class="btn-main" onclick="window.print()">Imprimir / Gerar PDF</button>
@@ -153,12 +184,17 @@
 </div>
 
 <script>
-// Registro do Service Worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
 }
 
 const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbzpAcX4dApu3iK3DG3uLuPAz61NMTzzkWRQ-mHhwqWby_rUECu7bp0DO9VvHSFqUk-z/exec";
+
+// Função para a textarea crescer sozinha
+function autoAjustar(elemento) {
+    elemento.style.height = "auto";
+    elemento.style.height = (elemento.scrollHeight) + "px";
+}
 
 function mascaraMoeda(campo) {
     let valor = campo.value.replace(/\D/g, "");
@@ -235,7 +271,7 @@ async function salvarParaPlanilha() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
         });
-        alert("Comando enviado! Verifique a folha de cálculo.");
+        alert("Dados guardados! Verifique a folha de cálculo.");
     } catch (e) {
         alert("Erro ao enviar.");
     } finally {
@@ -248,17 +284,13 @@ async function buscarSaldoAnterior() {
     const refreshBtn = document.querySelector(".btn-refresh");
     const mesAtual = document.getElementById("mes").value;
     const anoAtual = parseInt(document.getElementById("ano").value);
-    
     if (!anoAtual) return;
     if(refreshBtn) refreshBtn.innerText = "⏳";
-
     const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
     const idx = meses.indexOf(mesAtual);
-    
     let mesAnt = idx === 0 ? meses[11] : meses[idx - 1];
     let anoAnt = idx === 0 ? anoAtual - 1 : anoAtual;
     const chaveAnterior = `${anoAnt}_${mesAnt}`;
-
     try {
         const res = await fetch(`${URL_GOOGLE}?chave=${chaveAnterior}`);
         const data = await res.json();
