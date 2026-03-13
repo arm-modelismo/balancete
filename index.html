@@ -24,6 +24,7 @@
         body{ font-family:Arial,sans-serif; background:var(--bg); color:var(--text); margin:0; padding:20px; }
         .container{ max-width:650px; margin:auto; }
         
+        /* Espaço para o ícone no topo */
         .header-logo {
             display: block;
             margin: 0 auto 10px auto;
@@ -48,22 +49,7 @@
         .tabela{width:100%; border-collapse:collapse; clear:both;}
         .tabela td, .tabela th{padding:5px; border-bottom:1px solid #ffffff22; text-align:left; font-size:13px;}
         .resultado{background:var(--result); padding:10px; border-radius:8px; margin-top:8px; font-size:14px;}
-        
-        .obs-container { margin-top: 15px; }
-        .obs-container h3 { font-size: 14px; margin-bottom: 5px; color: var(--accent); }
-        .textarea-obs { 
-            width: 100%; 
-            min-height: 80px; 
-            background: var(--input-bg); 
-            color: var(--text); 
-            border: 1px solid #ffffff22; 
-            border-radius: 8px; 
-            padding: 10px; 
-            font-family: inherit; 
-            font-size: 13px; 
-            resize: none; 
-            overflow: hidden;
-        }
+        .clearfix::after { content: ""; clear: both; display: table; }
 
         @media print {
             @page { size: A4; margin: 10mm; }
@@ -71,7 +57,7 @@
             .container { max-width: 100%; height: 270mm; padding: 5mm; overflow: hidden; }
             .card { background: white !important; padding: 0; margin-bottom: 15px; color: black !important; }
             .btn-add, .btn-main, .btn-del, .btn-save, .btn-refresh { display: none !important; }
-            input, select, .textarea-obs { border: none !important; background: transparent !important; color: black !important; padding: 0 !important; font-weight: bold; }
+            input, select { border: none !important; background: transparent !important; color: black !important; padding: 0 !important; font-weight: bold; appearance: none; }
             .tabela { border: 1px solid black !important; }
             .tabela td, .tabela th { border: 1px solid black !important; color: black !important; padding: 4px; }
             .resultado { color: black !important; background: #f0f0f0 !important; border: 1px solid #000; margin-top: 4px; }
@@ -83,8 +69,7 @@
 <body>
 
 <div class="container" id="balancete">
-    <div style="text-align: center; font-size: 30px;">✈️</div>
-    <img src="logo.png" alt="" class="header-logo" onerror="this.style.display='none'">
+    <img src="logo.png" alt="Logo ARM" class="header-logo">
     
     <h1>ASSOCIAÇÃO REGIONAL DE MODELISMO</h1>
     <h2>Balancete Financeiro</h2>
@@ -107,7 +92,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card clearfix">
         <button class="btn-add" onclick="adicionarItem('tabelaReceitas', 'receita')">+ Adicionar</button>
         <h3 style="font-size:14px; margin:0 0 10px 0;">Receitas</h3>
         <table class="tabela" id="tabelaReceitas">
@@ -117,7 +102,7 @@
                     <td style="width:160px;">
                         <div style="display:flex; gap:5px; align-items:center;">
                             <input type="text" id="caixaAnterior" value="R$ 0,00" class="receita" oninput="mascaraMoeda(this)">
-                            <button type="button" onclick="buscarSaldoAnterior()" class="btn-refresh">🔄</button>
+                            <button type="button" onclick="buscarSaldoAnterior()" class="btn-refresh" title="Atualizar saldo anterior">🔄</button>
                         </div>
                     </td>
                     <td style="width:30px;"></td>
@@ -131,15 +116,25 @@
         </table>
     </div>
 
-    <div class="card">
+    <div class="card clearfix">
         <button class="btn-add" onclick="adicionarItem('tabelaDespesas', 'despesa')">+ Adicionar</button>
         <h3 style="font-size:14px; margin:0 0 10px 0;">Despesas</h3>
         <table class="tabela" id="tabelaDespesas">
             <tbody>
                 <tr>
                     <td>Aluguel</td>
-                    <td style="width:160px;"><input type="text" value="R$ 0,00" class="despesa" oninput="mascaraMoeda(this)"></td>
+                    <td style="width:160px;"><input type="text" value="R$ 1.600,00" class="despesa" oninput="mascaraMoeda(this)"></td>
                     <td style="width:30px;"></td>
+                </tr>
+                <tr>
+                    <td>Jardinagem</td>
+                    <td><input type="text" value="R$ 850,00" class="despesa" oninput="mascaraMoeda(this)"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Água / Luz / Contab.</td>
+                    <td><input type="text" value="R$ 250,00" class="despesa" oninput="mascaraMoeda(this)"></td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
@@ -149,12 +144,7 @@
         <div class="resultado">Receitas: <b id="totalReceita">R$ 0,00</b></div>
         <div class="resultado">Despesas: <b id="totalDespesa">R$ 0,00</b></div>
         <div class="resultado" style="background:var(--accent); color:black;">
-            Saldo Final: <b id="saldoFinal">R$ 0,00</b>
-        </div>
-
-        <div class="obs-container">
-            <h3>Observações:</h3>
-            <textarea class="textarea-obs" id="obs" placeholder="Notas do mês..." oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+            Saldo: <b id="saldoFinal">R$ 0,00</b>
         </div>
         
         <button class="btn-save" id="btnSalvar" onclick="salvarParaPlanilha()">Guardar no Google Sheets</button>
@@ -163,6 +153,11 @@
 </div>
 
 <script>
+// Registro do Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
+}
+
 const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbzpAcX4dApu3iK3DG3uLuPAz61NMTzzkWRQ-mHhwqWby_rUECu7bp0DO9VvHSFqUk-z/exec";
 
 function mascaraMoeda(campo) {
@@ -175,46 +170,50 @@ function mascaraMoeda(campo) {
     calcular();
 }
 
-function stringParaNumero(str) {
-    if (!str) return 0;
-    let n = str.replace("R$", "").replace(/\./g, "").replace(",", ".").trim();
-    return parseFloat(n) || 0;
+function stringParaNumero(valorStr) {
+    if (!valorStr) return 0;
+    let limpo = valorStr.replace("R$", "").replace(/\./g, "").replace(",", ".").trim();
+    return parseFloat(limpo) || 0;
 }
 
-function formatarReal(n) {
-    return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+function formatarReal(valor) {
+    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 function calcular() {
-    let r = 0, d = 0;
-    document.querySelectorAll(".receita").forEach(i => r += stringParaNumero(i.value));
-    document.querySelectorAll(".despesa").forEach(i => d += stringParaNumero(i.value));
-    
-    document.getElementById("totalReceita").innerText = formatarReal(r);
-    document.getElementById("totalDespesa").innerText = formatarReal(d);
-    
-    let saldo = r - d;
-    let campoSaldo = document.getElementById("saldoFinal");
-    campoSaldo.innerText = formatarReal(saldo);
-    campoSaldo.style.color = saldo < 0 ? "red" : "black";
+    let receitas = document.querySelectorAll(".receita");
+    let despesas = document.querySelectorAll(".despesa");
+    let tr = 0, td = 0;
+    receitas.forEach(c => tr += stringParaNumero(c.value));
+    despesas.forEach(c => td += stringParaNumero(c.value));
+    document.getElementById("totalReceita").innerText = formatarReal(tr);
+    document.getElementById("totalDespesa").innerText = formatarReal(td);
+    document.getElementById("saldoFinal").innerText = formatarReal(tr - td);
 }
 
-function adicionarItem(tabelaId, classe) {
-    let tbody = document.getElementById(tabelaId).querySelector("tbody");
-    let row = tbody.insertRow();
-    row.insertCell(0).innerHTML = '<input type="text" placeholder="Descrição">';
-    row.insertCell(1).innerHTML = `<input type="text" value="R$ 0,00" class="${classe}" oninput="mascaraMoeda(this)">`;
-    row.insertCell(2).innerHTML = '<button class="btn-del" onclick="this.parentElement.parentElement.remove();calcular()">X</button>';
+function adicionarItem(idTabela, classeInput) {
+    let tabela = document.getElementById(idTabela).getElementsByTagName('tbody')[0];
+    let linha = tabela.insertRow();
+    linha.insertCell(0).innerHTML = '<input type="text" placeholder="Descrição">';
+    linha.insertCell(1).innerHTML = `<input type="text" value="R$ 0,00" class="${classeInput}" oninput="mascaraMoeda(this)">`;
+    linha.insertCell(2).innerHTML = '<button class="btn-del" onclick="removerLinha(this)">X</button>';
+    calcular();
+}
+
+function removerLinha(botao) {
+    botao.parentNode.parentNode.remove();
+    calcular();
 }
 
 async function salvarParaPlanilha() {
     const btn = document.getElementById("btnSalvar");
-    btn.innerText = "A guardar..."; btn.disabled = true;
+    const mes = document.getElementById("mes").value;
+    const ano = document.getElementById("ano").value;
     
     const dados = {
         action: "salvar",
-        chave: `${document.getElementById("ano").value}_${document.getElementById("mes").value}`,
-        saldoFinal: document.getElementById("saldoFinal").innerText,
+        chave: `${ano}_${mes}`,
+        saldoFinal: stringParaNumero(document.getElementById("saldoFinal").innerText),
         receitas: Array.from(document.querySelectorAll("#tabelaReceitas tbody tr")).map(tr => ({
             desc: tr.cells[0].querySelector("input")?.value || tr.cells[0].innerText,
             val: tr.cells[1].querySelector("input").value
@@ -225,38 +224,66 @@ async function salvarParaPlanilha() {
         }))
     };
 
+    btn.innerText = "A guardar...";
+    btn.disabled = true;
+
     try {
-        await fetch(URL_GOOGLE, { method: "POST", mode: "no-cors", body: JSON.stringify(dados) });
-        alert("Enviado com sucesso!");
-    } catch (e) { alert("Erro ao guardar."); }
-    btn.innerText = "Guardar no Google Sheets"; btn.disabled = false;
+        await fetch(URL_GOOGLE, {
+            method: "POST",
+            mode: "no-cors", 
+            cache: "no-cache",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dados)
+        });
+        alert("Comando enviado! Verifique a folha de cálculo.");
+    } catch (e) {
+        alert("Erro ao enviar.");
+    } finally {
+        btn.innerText = "Guardar no Google Sheets";
+        btn.disabled = false;
+    }
 }
 
 async function buscarSaldoAnterior() {
-    const mes = document.getElementById("mes").value;
-    const ano = parseInt(document.getElementById("ano").value);
+    const refreshBtn = document.querySelector(".btn-refresh");
+    const mesAtual = document.getElementById("mes").value;
+    const anoAtual = parseInt(document.getElementById("ano").value);
+    
+    if (!anoAtual) return;
+    if(refreshBtn) refreshBtn.innerText = "⏳";
+
     const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-    const idx = meses.indexOf(mes);
-    let mAnt = idx === 0 ? meses[11] : meses[idx-1];
-    let aAnt = idx === 0 ? ano - 1 : ano;
+    const idx = meses.indexOf(mesAtual);
+    
+    let mesAnt = idx === 0 ? meses[11] : meses[idx - 1];
+    let anoAnt = idx === 0 ? anoAtual - 1 : anoAtual;
+    const chaveAnterior = `${anoAnt}_${mesAnt}`;
 
     try {
-        const res = await fetch(`${URL_GOOGLE}?chave=${aAnt}_${mAnt}`);
+        const res = await fetch(`${URL_GOOGLE}?chave=${chaveAnterior}`);
         const data = await res.json();
-        if (data && data.saldo) {
-            document.getElementById("caixaAnterior").value = data.saldo;
+        if (data && data.saldo !== undefined) {
+            document.getElementById("caixaAnterior").value = formatarReal(data.saldo);
             calcular();
         }
-    } catch (e) { console.log("Sem saldo anterior."); }
+    } catch (e) {
+        console.log("Saldo não encontrado.");
+    } finally {
+        if(refreshBtn) refreshBtn.innerText = "🔄";
+    }
 }
 
-window.onload = () => {
+function configurarData() {
     const hoje = new Date();
-    document.getElementById("mes").value = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"][hoje.getMonth()];
+    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    document.getElementById("mes").value = meses[hoje.getMonth()];
     document.getElementById("ano").value = hoje.getFullYear();
     buscarSaldoAnterior();
-    calcular();
-};
+}
+
+configurarData();
+calcular();
 </script>
+
 </body>
 </html>
